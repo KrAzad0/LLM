@@ -1,52 +1,46 @@
-# SmartCalc
+# RelayChat
 
-SmartCalc is a batteries-included scientific calculator implemented in Python. It
-offers a safe expression evaluator, rich mathematical context (statistics,
-combinatorics, angle conversions, and more), and an interactive REPL-oriented
-CLI.
+RelayChat is a fully open-source instant messaging engine built entirely in
+Python. It focuses on clarity, reproducibility, and approachability, making it a
+useful starting point for experiments, hackathons, or as a reference when
+teaching the fundamentals of messaging systems.
 
 ## Highlights
 
-* **Safe evaluation** – expressions are parsed with `ast` and executed only when
-  they contain whitelisted nodes, operators, and functions.
-* **Angle aware** – toggle between radians and degrees without rewriting your
-  formulas.
-* **Statistics helpers** – compute averages, medians, variance, and standard
-  deviation straight from the REPL.
-* **Combinatorics toolkit** – use `perm`, `comb`, `fact`, and `gamma` in
-  expressions.
-* **Session memory** – reference the `ans` variable to use the result of the last
-  calculation.
+* **Modern feature set** – register users, create private or public channels, and
+  keep presence information in sync.
+* **Rich message handling** – track unread counts, search through conversation
+  history, and sync read receipts across participants.
+* **Batteries included CLI** – the `relaychat` command offers a tiny REPL-like
+  experience for demos or smoke testing a deployment.
 
 ## Installation
 
-```
+```bash
 pip install .
+```
+
+## Library usage
+
+```python
+from instamsg import InstantMessagingApp
+
+app = InstantMessagingApp()
+alice = app.register_user("alice")
+bob = app.register_user("bob")
+channel = app.create_channel("general", [alice.id, bob.id])
+app.send_message(channel.id, alice.id, "Hello from RelayChat!")
 ```
 
 ## Command-line usage
 
-```
-smartcalc "sin(pi / 4) + mean(1, 2, 3)"
-```
-
-Start an interactive session instead:
-
-```
-smartcalc
+```bash
+relaychat --state state.json register alice
+relaychat --state state.json register bob --status away
+relaychat --state state.json channel create general alice bob
+relaychat --state state.json send <channel-id> alice "Hello from the CLI"
+relaychat --state state.json history <channel-id>
 ```
 
-Inside the REPL you can use the following meta commands:
-
-* `mode degrees` / `mode radians` – change the active angle unit
-* `vars` – inspect the variables currently in scope
-* `exit` / `quit` – leave the session
-
-## Library usage
-
-```
-from smartcalc.engine import SmartCalculator
-
-calc = SmartCalculator(angle_mode="degrees")
-print(calc.evaluate("sin(90) + comb(5, 2)"))
-```
+The CLI stores its state inside the JSON file referenced by `--state`, making it
+trivial to script or inspect using other tools.
